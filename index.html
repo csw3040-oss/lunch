@@ -353,6 +353,7 @@
       <button class="sc on" onclick="sortBy('distance',this)">거리순</button>
       <button class="sc" onclick="sortBy('name',this)">이름순</button>
       <button class="sc" onclick="sortBy('category',this)">카테고리순</button>
+      <button class="sc" onclick="sortBy('random',this)">🎲 랜덤</button>
     </div>
     <div class="rgrid" id="restaurantGrid"></div>
   </div>
@@ -432,34 +433,60 @@ function search() {
 }
 
 function fetch_() {
-  const ps=new kakao.maps.services.Places(); all=[];
-  const cc=sC||'FD6';
+  const ps = new kakao.maps.services.Places();
+  all = [];
 
-  // 1페이지 먼저 즉시 렌더링
-  ps.categorySearch(cc,(d,s,p)=>{
-    if(s===kakao.maps.services.Status.OK){
-      all=all.concat(d);
-      proc(true); // 1페이지 즉시 표시
-      resetBtn();
+  const loc = { location: new kakao.maps.LatLng(lat, lng), radius: sR, size: 15 };
 
-      // 2~3페이지 백그라운드 로드
-      if(p.hasNextPage){
-        showLoadingMore(true);
-        ps.categorySearch(cc,(d2,s2,p2)=>{
-          if(s2===kakao.maps.services.Status.OK){
-            all=all.concat(d2);
-            if(p2.hasNextPage){
-              ps.categorySearch(cc,(d3,s3)=>{
-                if(s3===kakao.maps.services.Status.OK) all=all.concat(d3);
-                proc(false); showLoadingMore(false);
-              },{location:new kakao.maps.LatLng(lat,lng),radius:sR,size:15,page:3});
-            } else { proc(false); showLoadingMore(false); }
-          } else { showLoadingMore(false); }
-        },{location:new kakao.maps.LatLng(lat,lng),radius:sR,size:15,page:2});
-      }
-    } else if(s===kakao.maps.services.Status.ZERO_RESULT){ proc(true); resetBtn(); }
-    else{ alert('검색 오류가 발생했어요.'); resetBtn(); }
-  },{location:new kakao.maps.LatLng(lat,lng),radius:sR,size:15,page:1});
+  // 카테고리별 키워드 매핑
+  const keywords = sSub ? sSub.split('|') : null;
+  const catCode  = sC || 'FD6';
+
+  if (!keywords) {
+    // 전체: FD6 + CE7 각각 45개
+    let done = 0;
+    const fetchCat = (cc) => {
+      let pg = 1;
+      const go = () => ps.categorySearch(cc, (d,s,p) => {
+        if(s===kakao.maps.services.Status.OK){ all=all.concat(d); if(p.hasNextPage&&pg<3){pg++;p.nextPage();}else{done++;if(done===2){proc(false);resetBtn();showLoadingMore(false);}}}
+        else{done++;if(done===2){proc(false);resetBtn();showLoadingMore(false);}}
+      }, {...loc, page: pg});
+      go();
+    };
+    showLoadingMore(true);
+    fetchCat('FD6');
+    fetchCat('CE7');
+  } else {
+    // 카테고리별: 키워드마다 keywordSearch 45개
+    let done = 0;
+    const total = keywords.length;
+    showLoadingMore(true);
+    keywords.forEach(kw => {
+      let pg = 1;
+      const go = () => ps.keywordSearch(kw, (d,s,p) => {
+        if(s===kakao.maps.services.Status.OK){ all=all.concat(d); if(p.hasNextPage&&pg<3){pg++;p.nextPage();}else{done++;if(done===total){dedupAndProc();}}}
+        else{done++;if(done===total){dedupAndProc();}}
+      }, {...loc, page: pg});
+      go();
+    });
+  }
+
+  // 1페이지 즉시 표시는 전체 모드에서만
+  if(!keywords){
+    ps.categorySearch('FD6', (d,s) => {
+      if(s===kakao.maps.services.Status.OK){ all=all.concat(d); proc(true); resetBtn(); }
+    }, {...loc, page:1});
+  } else {
+    resetBtn();
+  }
+}
+
+function dedupAndProc() {
+  // 중복 제거 (id 기준)
+  const seen = new Set();
+  all = all.filter(x => { if(seen.has(x.id)) return false; seen.add(x.id); return true; });
+  proc(false);
+  showLoadingMore(false);
 }
 
 function showLoadingMore(show){
@@ -476,14 +503,24 @@ function showLoadingMore(show){
 
 function proc(partial) {
   let r=[...all];
-  // sSub에 | 로 구분된 키워드 여러 개 지원
   if(sSub) {
     const keywords = sSub.split('|');
     r = r.filter(x => x.category_name && keywords.some(k => x.category_name.includes(k)));
   }
   r=r.filter(x=>!hist.find(h=>h.id===x.id));
+  // 거리순 정렬 후 셔플 여부에 따라 처리
   r.sort((a,b)=>parseInt(a.distance)-parseInt(b.distance));
+  if(window.shuffleMode) r=shuffle(r);
   fil=r; render(r, partial);
+}
+
+function shuffle(arr) {
+  const a=[...arr];
+  for(let i=a.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
 }
 
 function render(list, partial) {
@@ -528,6 +565,8 @@ function sortBy(type,btn) {
   if(type==='distance') s.sort((a,b)=>parseInt(a.distance)-parseInt(b.distance));
   if(type==='name') s.sort((a,b)=>a.place_name.localeCompare(b.place_name));
   if(type==='category') s.sort((a,b)=>(a.category_name||'').localeCompare(b.category_name||''));
+  if(type==='random') { window.shuffleMode=true; render(shuffle(s)); return; }
+  window.shuffleMode=false;
   render(s);
 }
 
