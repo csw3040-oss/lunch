@@ -264,9 +264,9 @@
 <main>
 
   <div class="hero">
-    <div class="hero-eye">BAEGOPA</div>
-    <h1>오늘 밥<br/>뭐 먹을지 모르겠다면</h1>
-    <p>주소 하나면 주변 식당/카페 다 찾아줌</p>
+    <div class="hero-eye">Lunch Finder</div>
+    <h1>오늘 밥/카페<br/>어디갈지 모르겠다면</h1>
+    <p>찾아줌</p>
   </div>
 
   <div class="card hist-panel" id="historyPanel">
@@ -283,7 +283,7 @@
       <div class="fl">위치</div>
       <div class="irow">
         <input type="text" class="ai" id="addrInput"
-               placeholder="주소 입력  (예: 강남구 테헤란로 211)"
+               placeholder="주소 입력  (예: 강남구 테헤란로 152)"
                onkeydown="if(event.key==='Enter') search()"/>
         <button class="lb" onclick="useMyLocation()">
           <i class="ti ti-current-location" aria-hidden="true"></i> 내 위치
@@ -322,6 +322,7 @@
         <button class="chip" data-cat="FD6" data-sub="양식|이탈리안|파스타|피자|스테이크|햄버거|샌드위치" onclick="sel(this,'c')"><i class="ti ti-salad" aria-hidden="true"></i> 양식</button>
         <button class="chip" data-cat="CE7" data-sub="" onclick="sel(this,'c')"><i class="ti ti-coffee" aria-hidden="true"></i> 카페</button>
         <button class="chip" data-cat="FD6" data-sub="분식|떡볶이|순대|김밥|라면" onclick="sel(this,'c')"><i class="ti ti-noodles" aria-hidden="true"></i> 분식</button>
+        <button class="chip" data-cat="FD6" data-sub="술집|호프|포차|이자카야|바|펍|맥주|소주|막걸리|와인바|칵테일" onclick="sel(this,'c')"><i class="ti ti-beer" aria-hidden="true"></i> 술집</button>
       </div>
     </div>
 
