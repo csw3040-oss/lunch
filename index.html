@@ -6,6 +6,7 @@
   <title>점심.해결</title>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css"/>
+  <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=870e8048dac84dc1c43f51e3d12cb73b&libraries=services"></script>
   <style>
     :root {
       --bg: #f7f6f3;
@@ -547,13 +548,7 @@ function copyLink() {
 function closeV(){document.getElementById('voteModal').classList.remove('show');}
 function resetBtn(){const b=document.getElementById('searchBtn');b.innerHTML='<i class="ti ti-search" aria-hidden="true"></i><span>주변 식당 찾기</span>';b.disabled=false;}
 
-window.addEventListener('load',()=>{
-  const s=document.createElement('script');
-  s.src='//dapi.kakao.com/v2/maps/sdk.js?appkey=870e8048dac84dc1c43f51e3d12cb73b&libraries=services&autoload=false';
-  s.onload=()=>kakao.maps.load(()=>{});
-  document.head.appendChild(s);
-  renderHist();
-});
+renderHist();
 </script>
 </body>
 </html>
