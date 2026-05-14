@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>점심.해결</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css"/>
+  <style>
+    :root {
+      --bg: #f7f6f3;
+      --surface: #ffffff;
+      --surface-2: #f7f6f3;
+      --border: rgba(0,0,0,.08);
+      --border-strong: rgba(0,0,0,.15);
+      --orange: #e85a2a;
+      --orange-soft: #fdf0eb;
+      --green: #2d6a4f;
+      --green-soft: #ebf5f0;
+      --text-1: #1a1a1a;
+      --text-2: #6b6b6b;
+      --text-3: #b8b8b8;
+      --r: 12px;
+      --r-lg: 18px;
+      --font-d: 'Playfair Display', serif;
+      --font-b: 'Noto Sans KR', sans-serif;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: var(--font-b); background: var(--bg); color: var(--text-1); min-height: 100vh; -webkit-font-smoothing: antialiased; }
+
+    header {
+      background: var(--surface); border-bottom: 1px solid var(--border);
+      padding: 0 32px; height: 58px;
+      display: flex; align-items: center; justify-content: space-between;
+      position: sticky; top: 0; z-index: 200;
+    }
+    .logo { font-family: var(--font-d); font-size: 1.3rem; color: var(--text-1); letter-spacing: -.02em; }
+    .logo span { color: var(--orange); }
+    .nav-btn {
+      background: none; border: 1px solid var(--border); border-radius: 8px;
+      padding: 7px 14px; font-size: .8rem; color: var(--text-2);
+      cursor: pointer; font-family: var(--font-b); transition: all .15s;
+      display: flex; align-items: center; gap: 5px;
+    }
+    .nav-btn:hover { border-color: var(--border-strong); color: var(--text-1); background: var(--surface-2); }
+    .nav-btn i { font-size: 15px; }
+
+    main { max-width: 820px; margin: 0 auto; padding: 40px 20px 80px; }
+
+    .hero { margin-bottom: 32px; }
+    .hero-eye { font-size: .7rem; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--orange); margin-bottom: 10px; }
+    .hero h1 { font-family: var(--font-d); font-size: clamp(2rem,5vw,3rem); line-height: 1.15; margin-bottom: 8px; }
+    .hero p { font-size: .88rem; color: var(--text-2); }
+
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-lg); padding: 28px; margin-bottom: 16px; }
+
+    .fl { font-size: .7rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--text-3); margin-bottom: 8px; }
+    .fg { margin-bottom: 20px; }
+
+    .irow { display: flex; gap: 8px; }
+    .ai {
+      flex: 1; border: 1px solid var(--border-strong); border-radius: var(--r);
+      padding: 12px 16px; font-size: .88rem; font-family: var(--font-b);
+      color: var(--text-1); background: var(--surface); transition: border-color .15s, box-shadow .15s; min-width: 0;
+    }
+    .ai:focus { outline: none; border-color: var(--text-1); box-shadow: 0 0 0 3px rgba(0,0,0,.05); }
+    .ai::placeholder { color: var(--text-3); }
+    .lb {
+      border: 1px solid var(--border-strong); background: var(--surface); border-radius: var(--r);
+      padding: 12px 15px; color: var(--text-2); cursor: pointer; font-size: .82rem;
+      transition: all .15s; display: flex; align-items: center; gap: 5px; white-space: nowrap;
+    }
+    .lb:hover { background: var(--surface-2); border-color: var(--text-1); color: var(--text-1); }
+    .lb i { font-size: 15px; }
+
+    .cr { display: flex; flex-wrap: wrap; gap: 7px; }
+    .chip {
+      padding: 7px 15px; border: 1px solid var(--border-strong); border-radius: 20px;
+      background: var(--surface); color: var(--text-2); font-size: .8rem; font-weight: 500;
+      cursor: pointer; font-family: var(--font-b); transition: all .15s;
+      display: flex; align-items: center; gap: 5px;
+    }
+    .chip i { font-size: 14px; }
+    .chip:hover { border-color: var(--text-1); color: var(--text-1); }
+    .chip.on { background: var(--text-1); border-color: var(--text-1); color: #fff; }
+
+    .sbtn {
+      width: 100%; padding: 14px; background: var(--text-1); border: none; border-radius: var(--r);
+      color: #fff; font-size: .9rem; font-weight: 600; font-family: var(--font-b);
+      cursor: pointer; transition: background .15s; display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    .sbtn:hover { background: #2d2d2d; }
+    .sbtn i { font-size: 17px; }
+
+    .hist-panel { display: none; }
+    .hist-panel.show { display: block; }
+    .hist-title { font-size: .78rem; font-weight: 600; color: var(--text-2); margin-bottom: 12px; display: flex; align-items: center; gap: 6px; }
+    .hist-chips { display: flex; flex-wrap: wrap; gap: 7px; }
+    .hc {
+      display: flex; align-items: center; gap: 6px; padding: 5px 12px;
+      background: var(--surface-2); border: 1px solid var(--border); border-radius: 20px;
+      font-size: .76rem; color: var(--text-2);
+    }
+    .hc .dx { cursor: pointer; color: var(--text-3); line-height: 1; transition: color .15s; }
+    .hc .dx:hover { color: #c0392b; }
+
+    #results { display: none; }
+    .rbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; flex-wrap: wrap; gap: 10px; }
+    .rinfo { font-size: .85rem; color: var(--text-2); }
+    .rinfo strong { color: var(--text-1); font-size: 1rem; font-weight: 700; }
+    .arow { display: flex; gap: 7px; }
+    .abtn {
+      padding: 8px 16px; border-radius: 20px; font-size: .8rem; font-weight: 600;
+      cursor: pointer; font-family: var(--font-b); transition: all .15s;
+      display: flex; align-items: center; gap: 5px;
+      border: 1px solid var(--border-strong); background: var(--surface); color: var(--text-2);
+    }
+    .abtn:hover { border-color: var(--text-1); color: var(--text-1); background: var(--surface-2); }
+    .abtn.pri { background: var(--text-1); color: #fff; border-color: var(--text-1); }
+    .abtn.pri:hover { background: #2d2d2d; }
+    .abtn i { font-size: 15px; }
+
+    .srow { display: flex; gap: 6px; margin-bottom: 18px; }
+    .sc {
+      padding: 5px 13px; border-radius: 20px; border: 1px solid var(--border);
+      background: var(--surface); color: var(--text-3); font-size: .76rem;
+      cursor: pointer; font-family: var(--font-b); transition: all .15s;
+    }
+    .sc.on { border-color: var(--border-strong); color: var(--text-1); background: var(--surface-2); }
+
+    .rgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px,1fr)); gap: 12px; }
+
+    .rc {
+      background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-lg);
+      padding: 18px 20px; cursor: pointer; transition: all .18s; position: relative;
+      animation: fu .28s ease both;
+    }
+    @keyframes fu { from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);} }
+    .rc:hover { border-color: var(--border-strong); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,.07); }
+    .rct { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 5px; }
+    .rn { font-size: .92rem; font-weight: 700; color: var(--text-1); line-height: 1.35; flex: 1; }
+    .rb { font-size: .67rem; font-weight: 600; padding: 3px 9px; border-radius: 20px; margin-left: 8px; flex-shrink: 0; }
+    .ra { font-size: .76rem; color: var(--text-2); margin-bottom: 10px; line-height: 1.4; }
+    .rm { display: flex; align-items: center; gap: 8px; }
+    .rd { font-size: .78rem; font-weight: 600; color: var(--orange); display: flex; align-items: center; gap: 3px; }
+    .rd i { font-size: 13px; }
+    .rp { font-size: .73rem; color: var(--text-3); display: flex; align-items: center; gap: 3px; }
+    .rp i { font-size: 13px; }
+    .ro { margin-left: auto; font-size: .67rem; font-weight: 600; color: var(--green); background: var(--green-soft); padding: 2px 8px; border-radius: 8px; }
+    .vm {
+      position: absolute; top: 14px; right: 14px; width: 22px; height: 22px;
+      background: var(--text-1); border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    }
+    .vm i { font-size: 12px; color: #fff; }
+
+    .bk  { background: #fdf0eb; color: #b54010; }
+    .bc  { background: #fef0f0; color: #b91c1c; }
+    .bj  { background: #f5f0fe; color: #7c3aed; }
+    .bw  { background: #eff6ff; color: #1d4ed8; }
+    .bca { background: #fffbeb; color: #92400e; }
+    .bs  { background: #f0fdf4; color: #166534; }
+    .be  { background: #f9fafb; color: #374151; }
+
+    .empty { text-align: center; padding: 60px 20px; color: var(--text-3); grid-column: 1/-1; }
+    .empty i { font-size: 2.2rem; margin-bottom: 12px; display: block; }
+    .empty p { font-size: .84rem; line-height: 1.6; }
+
+    .ov {
+      display: none; position: fixed; inset: 0; background: rgba(0,0,0,.4);
+      z-index: 500; align-items: center; justify-content: center; padding: 20px;
+    }
+    .ov.show { display: flex; }
+
+    .rm-modal {
+      background: var(--surface); border-radius: var(--r-lg); padding: 32px 28px 24px;
+      max-width: 340px; width: 100%; text-align: center; animation: pi .22s ease;
+    }
+    @keyframes pi { from{opacity:0;transform:scale(.92);}to{opacity:1;transform:scale(1);} }
+    .rm-icon {
+      width: 52px; height: 52px; border-radius: 13px; background: var(--orange-soft);
+      display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;
+    }
+    .rm-icon i { font-size: 24px; color: var(--orange); }
+    .rm-lbl { font-size: .72rem; color: var(--text-3); letter-spacing: .06em; text-transform: uppercase; margin-bottom: 5px; }
+    .rm-name { font-family: var(--font-d); font-size: 1.5rem; color: var(--text-1); margin-bottom: 4px; line-height: 1.25; }
+    .rm-addr { font-size: .78rem; color: var(--text-2); margin-bottom: 22px; }
+    .mbts { display: flex; flex-direction: column; gap: 7px; }
+    .mb {
+      width: 100%; padding: 11px; border-radius: var(--r); font-size: .84rem; font-weight: 600;
+      cursor: pointer; font-family: var(--font-b); border: 1px solid var(--border-strong);
+      background: var(--surface); color: var(--text-1); transition: all .15s;
+      display: flex; align-items: center; justify-content: center; gap: 7px;
+    }
+    .mb:hover { background: var(--surface-2); }
+    .mb.f { background: var(--text-1); color: #fff; border-color: var(--text-1); }
+    .mb.f:hover { background: #2d2d2d; }
+    .mb i { font-size: 15px; }
+    .mc { background: none; border: none; font-size: .76rem; color: var(--text-3); cursor: pointer; margin-top: 12px; font-family: var(--font-b); }
+    .mc:hover { color: var(--text-2); }
+
+    .vt-modal {
+      background: var(--surface); border-radius: var(--r-lg); padding: 26px;
+      max-width: 420px; width: 100%; animation: pi .22s ease; max-height: 85vh; overflow-y: auto;
+    }
+    .vt-title { font-size: 1rem; font-weight: 700; margin-bottom: 3px; }
+    .vt-sub { font-size: .78rem; color: var(--text-2); margin-bottom: 16px; }
+    .vl { display: flex; flex-direction: column; gap: 7px; margin-bottom: 14px; }
+    .vi {
+      display: flex; align-items: center; gap: 10px; padding: 11px 14px;
+      border: 1px solid var(--border); border-radius: var(--r); cursor: pointer; transition: all .15s;
+    }
+    .vi:hover { border-color: var(--border-strong); }
+    .vi.sel { border-color: var(--text-1); background: var(--surface-2); }
+    .vck {
+      width: 18px; height: 18px; border-radius: 50%; border: 1.5px solid var(--border-strong);
+      flex-shrink: 0; transition: all .15s; display: flex; align-items: center; justify-content: center;
+    }
+    .vi.sel .vck { background: var(--text-1); border-color: var(--text-1); }
+    .vi.sel .vck::after { content:''; width:6px; height:6px; background:#fff; border-radius:50%; display:block; }
+    .vn { font-size: .84rem; font-weight: 600; }
+    .vs { font-size: .72rem; color: var(--text-3); }
+    .sl {
+      background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--r);
+      padding: 10px 14px; font-size: .74rem; color: var(--orange); font-family: monospace;
+      word-break: break-all; margin-bottom: 12px; min-height: 34px;
+    }
+    .vft { display: flex; gap: 7px; }
+    .vft .mb { flex: 1; }
+
+    .sp {
+      display: inline-block; width: 16px; height: 16px;
+      border: 2px solid rgba(255,255,255,.3); border-top-color: #fff;
+      border-radius: 50%; animation: spin .5s linear infinite;
+    }
+    @keyframes spin { to{transform:rotate(360deg);} }
+
+    @media (max-width:600px) {
+      header { padding: 0 16px; }
+      main { padding: 24px 14px 60px; }
+      .card { padding: 20px 18px; }
+      .rgrid { grid-template-columns: 1fr; }
+      .arow { flex-wrap: wrap; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">점심<span>.</span>해결</div>
+  <button class="nav-btn" onclick="toggleHistory()">
+    <i class="ti ti-history" aria-hidden="true"></i> 최근 기록
+  </button>
+</header>
+
+<main>
+
+  <div class="hero">
+    <div class="hero-eye">Lunch Finder</div>
+    <h1>오늘 점심<br/>뭐 먹을지 모르겠다면</h1>
+    <p>주소 하나면 주변 식당 다 찾아줌</p>
+  </div>
+
+  <div class="card hist-panel" id="historyPanel">
+    <div class="hist-title">
+      <i class="ti ti-history" style="font-size:15px;" aria-hidden="true"></i>
+      최근에 먹은 곳 — 검색 결과에서 자동 제외
+    </div>
+    <div class="hist-chips" id="historyList"></div>
+  </div>
+
+  <div class="card">
+
+    <div class="fg">
+      <div class="fl">위치</div>
+      <div class="irow">
+        <input type="text" class="ai" id="addrInput"
+               placeholder="주소 입력  (예: 강남구 테헤란로 152)"
+               onkeydown="if(event.key==='Enter') search()"/>
+        <button class="lb" onclick="useMyLocation()">
+          <i class="ti ti-current-location" aria-hidden="true"></i> 내 위치
+        </button>
+      </div>
+    </div>
+
+    <div class="fg">
+      <div class="fl">반경</div>
+      <div class="cr" id="radiusRow">
+        <button class="chip" data-r="300" onclick="sel(this,'r')">300m</button>
+        <button class="chip on" data-r="500" onclick="sel(this,'r')">500m</button>
+        <button class="chip" data-r="1000" onclick="sel(this,'r')">1km</button>
+        <button class="chip" data-r="2000" onclick="sel(this,'r')">2km</button>
+        <button class="chip" data-r="3000" onclick="sel(this,'r')">3km</button>
+      </div>
+    </div>
+
+    <div class="fg">
+      <div class="fl">종류</div>
+      <div class="cr" id="catRow">
+        <button class="chip on" data-cat="" data-sub="" onclick="sel(this,'c')"><i class="ti ti-tool-kitchen-2" aria-hidden="true"></i> 전체</button>
+        <button class="chip" data-cat="FD6" data-sub="한식" onclick="sel(this,'c')"><i class="ti ti-bowl" aria-hidden="true"></i> 한식</button>
+        <button class="chip" data-cat="FD6" data-sub="중식" onclick="sel(this,'c')"><i class="ti ti-bowl" aria-hidden="true"></i> 중식</button>
+        <button class="chip" data-cat="FD6" data-sub="일식" onclick="sel(this,'c')"><i class="ti ti-fish" aria-hidden="true"></i> 일식</button>
+        <button class="chip" data-cat="FD6" data-sub="양식" onclick="sel(this,'c')"><i class="ti ti-salad" aria-hidden="true"></i> 양식</button>
+        <button class="chip" data-cat="CE7" data-sub="" onclick="sel(this,'c')"><i class="ti ti-coffee" aria-hidden="true"></i> 카페</button>
+        <button class="chip" data-cat="FD6" data-sub="분식" onclick="sel(this,'c')"><i class="ti ti-noodles" aria-hidden="true"></i> 분식</button>
+      </div>
+    </div>
+
+    <div class="fg" style="margin-bottom:24px;">
+      <div class="fl">예산</div>
+      <div class="cr" id="budgetRow">
+        <button class="chip on" data-b="0" onclick="sel(this,'b')">제한 없음</button>
+        <button class="chip" data-b="8000" onclick="sel(this,'b')">8,000원 이하</button>
+        <button class="chip" data-b="12000" onclick="sel(this,'b')">12,000원 이하</button>
+        <button class="chip" data-b="15000" onclick="sel(this,'b')">15,000원 이하</button>
+        <button class="chip" data-b="20000" onclick="sel(this,'b')">20,000원 이하</button>
+      </div>
+    </div>
+
+    <button class="sbtn" id="searchBtn" onclick="search()">
+      <i class="ti ti-search" aria-hidden="true"></i><span>주변 식당 찾기</span>
+    </button>
+  </div>
+
+  <div id="results">
+    <div class="rbar">
+      <div class="rinfo"><strong id="resultCount">0</strong>개 식당 발견</div>
+      <div class="arow">
+        <button class="abtn" onclick="openVote()"><i class="ti ti-users" aria-hidden="true"></i> 친구 투표</button>
+        <button class="abtn pri" onclick="spinRoulette()"><i class="ti ti-dice-3" aria-hidden="true"></i> 랜덤 추천</button>
+      </div>
+    </div>
+    <div class="srow">
+      <button class="sc on" onclick="sortBy('distance',this)">거리순</button>
+      <button class="sc" onclick="sortBy('name',this)">이름순</button>
+      <button class="sc" onclick="sortBy('category',this)">카테고리순</button>
+    </div>
+    <div class="rgrid" id="restaurantGrid"></div>
+  </div>
+
+</main>
+
+<div class="ov" id="rouletteModal">
+  <div class="rm-modal">
+    <div class="rm-icon"><i class="ti ti-dice-3" aria-hidden="true"></i></div>
+    <div class="rm-lbl">오늘의 점심</div>
+    <div class="rm-name" id="rouletteName">—</div>
+    <div class="rm-addr" id="rouletteAddr"></div>
+    <div class="mbts">
+      <button class="mb f" onclick="goToMap()"><i class="ti ti-map-pin" aria-hidden="true"></i> 카카오맵에서 보기</button>
+      <button class="mb" onclick="addHistory();closeR()"><i class="ti ti-check" aria-hidden="true"></i> 여기로 확정 (기록 저장)</button>
+      <button class="mb" onclick="spinRoulette()"><i class="ti ti-refresh" aria-hidden="true"></i> 다시 뽑기</button>
+    </div>
+    <button class="mc" onclick="closeR()">닫기</button>
+  </div>
+</div>
+
+<div class="ov" id="voteModal">
+  <div class="vt-modal">
+    <div class="vt-title">친구들이랑 투표하기</div>
+    <div class="vt-sub">최대 5개 선택 후 링크를 공유하세요</div>
+    <div class="vl" id="voteList"></div>
+    <div class="sl" id="shareLink">식당을 선택하면 링크가 생성됩니다</div>
+    <div class="vft">
+      <button class="mb" onclick="copyLink()"><i class="ti ti-copy" aria-hidden="true"></i> 링크 복사</button>
+      <button class="mb" onclick="closeV()">닫기</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const CM = { '한식':{cls:'bk',l:'한식'}, '중식':{cls:'bc',l:'중식'}, '일식':{cls:'bj',l:'일식'}, '양식':{cls:'bw',l:'양식'}, '카페':{cls:'bca',l:'카페'}, '분식':{cls:'bs',l:'분식'} };
+function gc(n) { if(!n) return {cls:'be',l:'기타'}; for(const k of Object.keys(CM)) if(n.includes(k)) return CM[k]; return {cls:'be',l:'기타'}; }
+
+let all=[], fil=[], sR=500, sC='', sSub='', sB=0, lat=null, lng=null, rT=null;
+let hist = JSON.parse(localStorage.getItem('lh')||'[]'), vs=[];
+
+function sel(btn, type) {
+  const id = type==='r'?'radiusRow':type==='c'?'catRow':'budgetRow';
+  document.querySelectorAll(`#${id} .chip`).forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  if(type==='r') sR=parseInt(btn.dataset.r);
+  if(type==='c') { sC=btn.dataset.cat||''; sSub=btn.dataset.sub||''; }
+  if(type==='b') sB=parseInt(btn.dataset.b);
+}
+
+function useMyLocation() {
+  if(!navigator.geolocation){alert('위치 정보를 지원하지 않는 브라우저예요.');return;}
+  navigator.geolocation.getCurrentPosition(p=>{
+    lat=p.coords.latitude; lng=p.coords.longitude;
+    new kakao.maps.services.Geocoder().coord2Address(lng,lat,(r,s)=>{
+      if(s===kakao.maps.services.Status.OK)
+        document.getElementById('addrInput').value=r[0].road_address?.address_name||r[0].address.address_name;
+    });
+  },()=>alert('위치 접근이 거부됐어요.'));
+}
+
+function search() {
+  const addr=document.getElementById('addrInput').value.trim();
+  if(!addr&&!lat){alert('주소를 입력하거나 내 위치를 사용해주세요.');return;}
+  const btn=document.getElementById('searchBtn');
+  btn.innerHTML='<span class="sp"></span><span>검색 중...</span>';
+  btn.disabled=true;
+  if(addr) {
+    new kakao.maps.services.Geocoder().addressSearch(addr,(r,s)=>{
+      if(s===kakao.maps.services.Status.OK){lat=parseFloat(r[0].y);lng=parseFloat(r[0].x);fetch_();}
+      else{alert('주소를 찾을 수 없어요.');resetBtn();}
+    });
+  } else fetch_();
+}
+
+function fetch_() {
+  const ps=new kakao.maps.services.Places(); all=[];
+  const cc=sC||'FD6';
+
+  // 1페이지 먼저 즉시 렌더링
+  ps.categorySearch(cc,(d,s,p)=>{
+    if(s===kakao.maps.services.Status.OK){
+      all=all.concat(d);
+      proc(true); // 1페이지 즉시 표시
+      resetBtn();
+
+      // 2~3페이지 백그라운드 로드
+      if(p.hasNextPage){
+        showLoadingMore(true);
+        ps.categorySearch(cc,(d2,s2,p2)=>{
+          if(s2===kakao.maps.services.Status.OK){
+            all=all.concat(d2);
+            if(p2.hasNextPage){
+              ps.categorySearch(cc,(d3,s3)=>{
+                if(s3===kakao.maps.services.Status.OK) all=all.concat(d3);
+                proc(false); showLoadingMore(false);
+              },{location:new kakao.maps.LatLng(lat,lng),radius:sR,size:15,page:3});
+            } else { proc(false); showLoadingMore(false); }
+          } else { showLoadingMore(false); }
+        },{location:new kakao.maps.LatLng(lat,lng),radius:sR,size:15,page:2});
+      }
+    } else if(s===kakao.maps.services.Status.ZERO_RESULT){ proc(true); resetBtn(); }
+    else{ alert('검색 오류가 발생했어요.'); resetBtn(); }
+  },{location:new kakao.maps.LatLng(lat,lng),radius:sR,size:15,page:1});
+}
+
+function showLoadingMore(show){
+  let el=document.getElementById('loadingMore');
+  if(!el){
+    el=document.createElement('div');
+    el.id='loadingMore';
+    el.style.cssText='text-align:center;padding:16px;font-size:.78rem;color:var(--text-3);grid-column:1/-1;display:flex;align-items:center;justify-content:center;gap:8px;';
+    el.innerHTML='<span class="sp"></span> 추가 식당 불러오는 중...';
+    document.getElementById('restaurantGrid').appendChild(el);
+  }
+  el.style.display=show?'flex':'none';
+}
+
+function proc(partial) {
+  let r=[...all];
+  if(sSub) r=r.filter(x=>x.category_name&&x.category_name.includes(sSub));
+  r=r.filter(x=>!hist.find(h=>h.id===x.id));
+  r.sort((a,b)=>parseInt(a.distance)-parseInt(b.distance));
+  fil=r; render(r, partial);
+}
+
+function render(list, partial) {
+  document.getElementById('resultCount').textContent=list.length;
+  document.getElementById('results').style.display='block';
+  const g=document.getElementById('restaurantGrid');
+  if(!list.length){
+    g.innerHTML=`<div class="empty"><i class="ti ti-mood-sad" aria-hidden="true"></i><p>근처에 식당이 없어요<br/>반경을 늘려보세요</p></div>`;
+    return;
+  }
+  const loadingEl = document.getElementById('loadingMore');
+  g.innerHTML=list.map((r,i)=>{
+    const c=gc(r.category_name), d=parseInt(r.distance), ds=d>=1000?(d/1000).toFixed(1)+'km':d+'m';
+    const voted=vs.find(v=>v.id===r.id);
+    return `<div class="rc" style="animation-delay:${i*.03}s" onclick="window.open('${r.place_url}','_blank')">
+      ${voted?`<div class="vm"><i class="ti ti-check" aria-hidden="true"></i></div>`:''}
+      <div class="rct"><div class="rn">${r.place_name}</div><span class="rb ${c.cls}">${c.l}</span></div>
+      <div class="ra">${r.road_address_name||r.address_name}</div>
+      <div class="rm"><span class="rd"><i class="ti ti-map-pin" aria-hidden="true"></i>${ds}</span>${r.phone?`<span class="rp"><i class="ti ti-phone" aria-hidden="true"></i>${r.phone}</span>`:''}<span class="ro">영업중</span></div>
+    </div>`;
+  }).join('');
+  // 로딩 인디케이터 다시 붙이기
+  if(partial && loadingEl) g.appendChild(loadingEl);
+}
+
+function sortBy(type,btn) {
+  document.querySelectorAll('.sc').forEach(b=>b.classList.remove('on')); btn.classList.add('on');
+  const s=[...fil];
+  if(type==='distance') s.sort((a,b)=>parseInt(a.distance)-parseInt(b.distance));
+  if(type==='name') s.sort((a,b)=>a.place_name.localeCompare(b.place_name));
+  if(type==='category') s.sort((a,b)=>(a.category_name||'').localeCompare(b.category_name||''));
+  render(s);
+}
+
+function spinRoulette() {
+  if(!fil.length){alert('먼저 검색해주세요.');return;}
+  document.getElementById('rouletteModal').classList.add('show');
+  let n=0;
+  const iv=setInterval(()=>{
+    const r=fil[Math.floor(Math.random()*fil.length)];
+    document.getElementById('rouletteName').textContent=r.place_name;
+    document.getElementById('rouletteAddr').textContent=r.road_address_name||r.address_name;
+    rT=r; n++;
+    if(n>20) clearInterval(iv);
+  },75);
+}
+function closeR(){document.getElementById('rouletteModal').classList.remove('show');}
+function goToMap(){if(rT)window.open(rT.place_url,'_blank');}
+
+function addHistory() {
+  if(!rT||hist.find(h=>h.id===rT.id)) return;
+  hist.unshift({id:rT.id,name:rT.place_name});
+  if(hist.length>10) hist.pop();
+  localStorage.setItem('lh',JSON.stringify(hist)); renderHist();
+}
+function renderHist() {
+  const l=document.getElementById('historyList');
+  if(!hist.length){l.innerHTML='<span style="font-size:.76rem;color:var(--text-3)">아직 기록 없음</span>';return;}
+  l.innerHTML=hist.map(h=>`<div class="hc"><span>${h.name}</span><span class="dx" onclick="rmHist('${h.id}')"><i class="ti ti-x" style="font-size:12px;vertical-align:middle;" aria-hidden="true"></i></span></div>`).join('');
+}
+function rmHist(id){hist=hist.filter(h=>h.id!==id);localStorage.setItem('lh',JSON.stringify(hist));renderHist();}
+function toggleHistory(){document.getElementById('historyPanel').classList.toggle('show');renderHist();}
+
+function openVote() {
+  if(!fil.length){alert('먼저 검색해주세요.');return;}
+  vs=[];
+  document.getElementById('voteList').innerHTML=fil.slice(0,10).map(r=>`
+    <div class="vi" onclick="tvote(this,'${r.id}','${r.place_name.replace(/'/g,"\\'")}','${(r.road_address_name||r.address_name).replace(/'/g,"\\'")}')">
+      <div class="vck"></div>
+      <div><div class="vn">${r.place_name}</div><div class="vs">${r.road_address_name||r.address_name} · ${parseInt(r.distance)}m</div></div>
+    </div>`).join('');
+  document.getElementById('shareLink').textContent='식당을 선택하면 링크가 생성됩니다';
+  document.getElementById('voteModal').classList.add('show');
+}
+function tvote(el,id,name,addr) {
+  const i=vs.findIndex(v=>v.id===id);
+  if(i>=0){vs.splice(i,1);el.classList.remove('sel');}
+  else{if(vs.length>=5){alert('최대 5개까지 선택 가능해요.');return;}vs.push({id,name,addr});el.classList.add('sel');}
+  const names=vs.map(v=>v.name).join(' vs ');
+  document.getElementById('shareLink').textContent=names?`${location.origin}${location.pathname}?vote=${encodeURIComponent(names)}`:'식당을 선택하면 링크가 생성됩니다';
+}
+function copyLink() {
+  const t=document.getElementById('shareLink').textContent;
+  if(!t.startsWith('http')){alert('식당을 먼저 선택해주세요.');return;}
+  navigator.clipboard.writeText(t).then(()=>alert('링크가 복사됐어요!'));
+}
+function closeV(){document.getElementById('voteModal').classList.remove('show');}
+function resetBtn(){const b=document.getElementById('searchBtn');b.innerHTML='<i class="ti ti-search" aria-hidden="true"></i><span>주변 식당 찾기</span>';b.disabled=false;}
+
+window.addEventListener('load',()=>{
+  const s=document.createElement('script');
+  s.src='//dapi.kakao.com/v2/maps/sdk.js?appkey=870e8048dac84dc1c43f51e3d12cb73b&libraries=services&autoload=false';
+  s.onload=()=>kakao.maps.load(()=>{});
+  document.head.appendChild(s);
+  renderHist();
+});
+</script>
+</body>
+</html>
