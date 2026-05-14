@@ -315,13 +315,13 @@
     <div class="fg">
       <div class="fl">종류</div>
       <div class="cr" id="catRow">
-        <button class="chip on" data-cat="" data-sub="" onclick="sel(this,'c')"><i class="ti ti-tool-kitchen-2" aria-hidden="true"></i> 전체</button>
+        <button class="chip on" data-cat="FD6" data-sub="" onclick="sel(this,'c')"><i class="ti ti-tool-kitchen-2" aria-hidden="true"></i> 전체</button>
         <button class="chip" data-cat="FD6" data-sub="한식" onclick="sel(this,'c')"><i class="ti ti-bowl" aria-hidden="true"></i> 한식</button>
-        <button class="chip" data-cat="FD6" data-sub="중식" onclick="sel(this,'c')"><i class="ti ti-bowl" aria-hidden="true"></i> 중식</button>
-        <button class="chip" data-cat="FD6" data-sub="일식" onclick="sel(this,'c')"><i class="ti ti-fish" aria-hidden="true"></i> 일식</button>
-        <button class="chip" data-cat="FD6" data-sub="양식" onclick="sel(this,'c')"><i class="ti ti-salad" aria-hidden="true"></i> 양식</button>
+        <button class="chip" data-cat="FD6" data-sub="중식|마라|양꼬치|훠궈|딤섬" onclick="sel(this,'c')"><i class="ti ti-bowl" aria-hidden="true"></i> 중식</button>
+        <button class="chip" data-cat="FD6" data-sub="일식|초밥|스시|라멘|돈카츠|우동|사시미" onclick="sel(this,'c')"><i class="ti ti-fish" aria-hidden="true"></i> 일식</button>
+        <button class="chip" data-cat="FD6" data-sub="양식|이탈리안|파스타|피자|스테이크|햄버거|샌드위치" onclick="sel(this,'c')"><i class="ti ti-salad" aria-hidden="true"></i> 양식</button>
         <button class="chip" data-cat="CE7" data-sub="" onclick="sel(this,'c')"><i class="ti ti-coffee" aria-hidden="true"></i> 카페</button>
-        <button class="chip" data-cat="FD6" data-sub="분식" onclick="sel(this,'c')"><i class="ti ti-noodles" aria-hidden="true"></i> 분식</button>
+        <button class="chip" data-cat="FD6" data-sub="분식|떡볶이|순대|김밥|라면" onclick="sel(this,'c')"><i class="ti ti-noodles" aria-hidden="true"></i> 분식</button>
       </div>
     </div>
 
@@ -476,7 +476,11 @@ function showLoadingMore(show){
 
 function proc(partial) {
   let r=[...all];
-  if(sSub) r=r.filter(x=>x.category_name&&x.category_name.includes(sSub));
+  // sSub에 | 로 구분된 키워드 여러 개 지원
+  if(sSub) {
+    const keywords = sSub.split('|');
+    r = r.filter(x => x.category_name && keywords.some(k => x.category_name.includes(k)));
+  }
   r=r.filter(x=>!hist.find(h=>h.id===x.id));
   r.sort((a,b)=>parseInt(a.distance)-parseInt(b.distance));
   fil=r; render(r, partial);
