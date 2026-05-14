@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>점심.해결</title>
+  <title>나는 배고프다.</title>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css"/>
   <script>
     var s=document.createElement('script');
-    s.src='//dapi.kakao.com/v2/maps/sdk.js?appkey=e6dd25818cbb81d0b8842dd41acd53fe&libraries=services&autoload=false';
+    s.src='//dapi.kakao.com/v2/maps/sdk.js?appkey=129b3c5b5851c97c8c7230c2259aea71&libraries=services&autoload=false';
     s.onload=function(){kakao.maps.load(function(){window.kakaoLoaded=true;});};
     s.onerror=function(){alert('카카오 지도 로드 실패. 잠시 후 다시 시도해주세요.');};
     document.head.appendChild(s);
@@ -263,8 +263,8 @@
 
   <div class="hero">
     <div class="hero-eye">Lunch Finder</div>
-    <h1>오늘 점심<br/>뭐 먹을지 모르겠다면</h1>
-    <p>주소 하나면 주변 식당 다 찾아줌</p>
+    <h1>오늘 점심<br/>뭐 먹을지 못고름?</h1>
+    <p>사용료 내놔</p>
   </div>
 
   <div class="card hist-panel" id="historyPanel">
@@ -297,6 +297,8 @@
         <button class="chip" data-r="1000" onclick="sel(this,'r')">1km</button>
         <button class="chip" data-r="2000" onclick="sel(this,'r')">2km</button>
         <button class="chip" data-r="3000" onclick="sel(this,'r')">3km</button>
+        <button class="chip" data-r="5000" onclick="sel(this,'r')">5km</button>
+        <button class="chip" data-r="10000" onclick="sel(this,'r')">10km</button>
       </div>
     </div>
 
@@ -481,14 +483,25 @@ function render(list, partial) {
   g.innerHTML=list.map((r,i)=>{
     const c=gc(r.category_name), d=parseInt(r.distance), ds=d>=1000?(d/1000).toFixed(1)+'km':d+'m';
     const voted=vs.find(v=>v.id===r.id);
+    // 도보 시간: 평균 시속 4km = 분당 약 67m
+    const walkMin = Math.ceil(d / 67);
+    const walkStr = walkMin < 60 ? `${walkMin}분` : `${Math.floor(walkMin/60)}시간 ${walkMin%60}분`;
+    // 차량 시간: 평균 시속 30km (시내) = 분당 약 500m
+    const driveMin = Math.ceil(d / 500);
+    const driveStr = driveMin < 1 ? '1분 미만' : `${driveMin}분`;
     return `<div class="rc" style="animation-delay:${i*.03}s" onclick="window.open('${r.place_url}','_blank')">
       ${voted?`<div class="vm"><i class="ti ti-check" aria-hidden="true"></i></div>`:''}
       <div class="rct"><div class="rn">${r.place_name}</div><span class="rb ${c.cls}">${c.l}</span></div>
       <div class="ra">${r.road_address_name||r.address_name}</div>
-      <div class="rm"><span class="rd"><i class="ti ti-map-pin" aria-hidden="true"></i>${ds}</span>${r.phone?`<span class="rp"><i class="ti ti-phone" aria-hidden="true"></i>${r.phone}</span>`:''}<span class="ro">영업중</span></div>
+      <div class="rm">
+        <span class="rd"><i class="ti ti-map-pin" aria-hidden="true"></i>${ds}</span>
+        <span class="rp"><i class="ti ti-walk" aria-hidden="true"></i>${walkStr}</span>
+        <span class="rp"><i class="ti ti-car" aria-hidden="true"></i>${driveStr}</span>
+        ${r.phone?`<span class="rp"><i class="ti ti-phone" aria-hidden="true"></i>${r.phone}</span>`:''}
+        <span class="ro">영업중</span>
+      </div>
     </div>`;
   }).join('');
-  // 로딩 인디케이터 다시 붙이기
   if(partial && loadingEl) g.appendChild(loadingEl);
 }
 
