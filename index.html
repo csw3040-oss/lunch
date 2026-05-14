@@ -476,7 +476,7 @@ function showLoadingMore(show){
 
 function proc(partial) {
   let r=[...all];
-  if(sSub) r=r.filter(x=>x.category_name&&x.category_name.includes(sSub));
+  function proc(partial) {   let r = [...all];    if (sSub) {     r = r.filter(x => {       const cat = x.category_name || '';       const name = x.place_name || '';        // 중식 버튼을 눌렀을 때는 마라탕/훠궈/양꼬치 계열도 포함       if (sSub === '중식') {         return cat.includes('중식') ||                cat.includes('중국') ||                cat.includes('아시아') ||                cat.includes('마라') ||                name.includes('중국') ||                name.includes('중화') ||                name.includes('마라') ||                name.includes('마라탕') ||                name.includes('마라샹궈') ||                name.includes('훠궈') ||                name.includes('양꼬치') ||                name.includes('양갈비');       }        return cat.includes(sSub);     });   }    r = r.filter(x => !hist.find(h => h.id === x.id));   r.sort((a, b) => parseInt(a.distance) - parseInt(b.distance));   fil = r;   render(r, partial); }
   r=r.filter(x=>!hist.find(h=>h.id===x.id));
   r.sort((a,b)=>parseInt(a.distance)-parseInt(b.distance));
   fil=r; render(r, partial);
