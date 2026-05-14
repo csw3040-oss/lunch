@@ -317,7 +317,7 @@
       <div class="cr" id="catRow">
         <button class="chip on" data-cat="FD6" data-sub="" onclick="sel(this,'c')"><i class="ti ti-tool-kitchen-2" aria-hidden="true"></i> 전체</button>
         <button class="chip" data-cat="FD6" data-sub="한식" onclick="sel(this,'c')"><i class="ti ti-bowl" aria-hidden="true"></i> 한식</button>
-        <button class="chip" data-cat="FD6" data-sub="중식|마라|양꼬치|훠궈|딤섬" onclick="sel(this,'c')"><i class="ti ti-bowl" aria-hidden="true"></i> 중식</button>
+        <button class="chip" data-cat="FD6" data-sub="중식|마라탕|마라|양꼬치|훠궈|딤섬|중화요리" onclick="sel(this,'c')"><i class="ti ti-bowl" aria-hidden="true"></i> 중식</button>
         <button class="chip" data-cat="FD6" data-sub="일식|초밥|스시|라멘|돈카츠|우동|사시미" onclick="sel(this,'c')"><i class="ti ti-fish" aria-hidden="true"></i> 일식</button>
         <button class="chip" data-cat="FD6" data-sub="양식|이탈리안|파스타|피자|스테이크|햄버거|샌드위치" onclick="sel(this,'c')"><i class="ti ti-salad" aria-hidden="true"></i> 양식</button>
         <button class="chip" data-cat="CE7" data-sub="" onclick="sel(this,'c')"><i class="ti ti-coffee" aria-hidden="true"></i> 카페</button>
@@ -435,49 +435,46 @@ function search() {
 function fetch_() {
   const ps = new kakao.maps.services.Places();
   all = [];
-
   const loc = { location: new kakao.maps.LatLng(lat, lng), radius: sR, size: 15 };
-
-  // 카테고리별 키워드 매핑
   const keywords = sSub ? sSub.split('|') : null;
-  const catCode  = sC || 'FD6';
 
-  if (!keywords) {
-    // 전체: FD6 + CE7 각각 45개
-    let done = 0;
-    const fetchCat = (cc) => {
-      let pg = 1;
-      const go = () => ps.categorySearch(cc, (d,s,p) => {
-        if(s===kakao.maps.services.Status.OK){ all=all.concat(d); if(p.hasNextPage&&pg<3){pg++;p.nextPage();}else{done++;if(done===2){proc(false);resetBtn();showLoadingMore(false);}}}
-        else{done++;if(done===2){proc(false);resetBtn();showLoadingMore(false);}}
-      }, {...loc, page: pg});
-      go();
-    };
+  const fetchPages = (searchFn, params, cb) => {
+    let pg = 1;
+    const go = () => searchFn(...params, (d,s,p) => {
+      if(s===kakao.maps.services.Status.OK){
+        all=all.concat(d);
+        if(p.hasNextPage&&pg<3){pg++;p.nextPage();}
+        else cb();
+      } else cb();
+    }, {...loc, page:pg});
+    go();
+  };
+
+  if(sC==='CE7') {
+    // 카페만
     showLoadingMore(true);
-    fetchCat('FD6');
-    fetchCat('CE7');
-  } else {
-    // 카테고리별: 키워드마다 keywordSearch 45개
-    let done = 0;
-    const total = keywords.length;
-    showLoadingMore(true);
-    keywords.forEach(kw => {
-      let pg = 1;
-      const go = () => ps.keywordSearch(kw, (d,s,p) => {
-        if(s===kakao.maps.services.Status.OK){ all=all.concat(d); if(p.hasNextPage&&pg<3){pg++;p.nextPage();}else{done++;if(done===total){dedupAndProc();}}}
-        else{done++;if(done===total){dedupAndProc();}}
-      }, {...loc, page: pg});
-      go();
+    fetchPages(ps.categorySearch.bind(ps), ['CE7'], ()=>{
+      dedupAndProc(); resetBtn();
     });
-  }
-
-  // 1페이지 즉시 표시는 전체 모드에서만
-  if(!keywords){
-    ps.categorySearch('FD6', (d,s) => {
-      if(s===kakao.maps.services.Status.OK){ all=all.concat(d); proc(true); resetBtn(); }
-    }, {...loc, page:1});
+  } else if(!keywords) {
+    // 전체: FD6 + CE7
+    let done=0;
+    showLoadingMore(true);
+    const check=()=>{ done++; if(done===2){ dedupAndProc(); resetBtn(); } };
+    fetchPages(ps.categorySearch.bind(ps), ['FD6'], check);
+    fetchPages(ps.categorySearch.bind(ps), ['CE7'], check);
   } else {
+    // 키워드별 검색
+    let done=0;
+    const total=keywords.length;
+    showLoadingMore(true);
     resetBtn();
+    keywords.forEach(kw=>{
+      fetchPages(ps.keywordSearch.bind(ps), [kw], ()=>{
+        done++;
+        if(done===total) dedupAndProc();
+      });
+    });
   }
 }
 
