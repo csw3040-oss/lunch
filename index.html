@@ -148,10 +148,12 @@
     .rn { font-size: .92rem; font-weight: 700; color: var(--text-1); line-height: 1.35; flex: 1; }
     .rb { font-size: .67rem; font-weight: 600; padding: 3px 9px; border-radius: 20px; margin-left: 8px; flex-shrink: 0; }
     .ra { font-size: .76rem; color: var(--text-2); margin-bottom: 10px; line-height: 1.4; }
-    .rm { display: flex; align-items: center; gap: 8px; }
-    .rd { font-size: .78rem; font-weight: 600; color: var(--orange); display: flex; align-items: center; gap: 3px; }
+    .rm { display: flex; flex-direction: column; gap: 6px; }
+    .rm-top { display: flex; align-items: center; gap: 10px; }
+    .rm-bottom { display: flex; align-items: center; gap: 10px; padding-top: 6px; border-top: 1px solid var(--border); }
+    .rd { font-size: .8rem; font-weight: 700; color: var(--orange); display: flex; align-items: center; gap: 3px; }
     .rd i { font-size: 13px; }
-    .rp { font-size: .73rem; color: var(--text-3); display: flex; align-items: center; gap: 3px; }
+    .rp { font-size: .75rem; color: var(--text-2); display: flex; align-items: center; gap: 3px; }
     .rp i { font-size: 13px; }
     .ro { margin-left: auto; font-size: .67rem; font-weight: 600; color: var(--green); background: var(--green-soft); padding: 2px 8px; border-radius: 8px; }
     .vm {
@@ -494,11 +496,13 @@ function render(list, partial) {
       <div class="rct"><div class="rn">${r.place_name}</div><span class="rb ${c.cls}">${c.l}</span></div>
       <div class="ra">${r.road_address_name||r.address_name}</div>
       <div class="rm">
-        <span class="rd"><i class="ti ti-map-pin" aria-hidden="true"></i>${ds}</span>
-        <span class="rp"><i class="ti ti-walk" aria-hidden="true"></i>${walkStr}</span>
-        <span class="rp"><i class="ti ti-car" aria-hidden="true"></i>${driveStr}</span>
-        ${r.phone?`<span class="rp"><i class="ti ti-phone" aria-hidden="true"></i>${r.phone}</span>`:''}
-        <span class="ro">영업중</span>
+        <div class="rm-top">
+          <span class="rd"><i class="ti ti-map-pin" aria-hidden="true"></i>${ds}</span>
+          <span class="rp"><i class="ti ti-walk" aria-hidden="true"></i>도보 ${walkStr}</span>
+          <span class="rp"><i class="ti ti-car" aria-hidden="true"></i>차량 ${driveStr}</span>
+          <span class="ro">영업중</span>
+        </div>
+        ${r.phone?`<div class="rm-bottom"><span class="rp"><i class="ti ti-phone" aria-hidden="true"></i>${r.phone}</span></div>`:''}
       </div>
     </div>`;
   }).join('');
