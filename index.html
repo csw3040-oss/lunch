@@ -6,7 +6,13 @@
   <title>점심.해결</title>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css"/>
-  <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=870e8048dac84dc1c43f51e3d12cb73b&libraries=services"></script>
+  <script>
+    var s=document.createElement('script');
+    s.src='//dapi.kakao.com/v2/maps/sdk.js?appkey=870e8048dac84dc1c43f51e3d12cb73b&libraries=services&autoload=false';
+    s.onload=function(){kakao.maps.load(function(){window.kakaoLoaded=true;});};
+    s.onerror=function(){alert('카카오 지도 로드 실패. 잠시 후 다시 시도해주세요.');};
+    document.head.appendChild(s);
+  </script>
   <style>
     :root {
       --bg: #f7f6f3;
@@ -386,6 +392,7 @@ function sel(btn, type) {
 }
 
 function useMyLocation() {
+  if(!window.kakaoLoaded){alert('지도 서비스 로딩 중입니다. 잠시 후 다시 시도해주세요.');return;}
   if(!navigator.geolocation){alert('위치 정보를 지원하지 않는 브라우저예요.');return;}
   navigator.geolocation.getCurrentPosition(p=>{
     lat=p.coords.latitude; lng=p.coords.longitude;
@@ -397,6 +404,7 @@ function useMyLocation() {
 }
 
 function search() {
+  if(!window.kakaoLoaded){alert('지도 서비스 로딩 중입니다. 잠시 후 다시 시도해주세요.');return;}
   const addr=document.getElementById('addrInput').value.trim();
   if(!addr&&!lat){alert('주소를 입력하거나 내 위치를 사용해주세요.');return;}
   const btn=document.getElementById('searchBtn');
